@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            const frequency = 600
+            const downloadName = "page2-output.webm"
+
+            navigator.mediaDevices.getDisplayMedia({video: true, audio: true}).then((stream) => {
+
+                // start the tone
+                const audioContext = new AudioContext()
+                const osc = audioContext.createOscillator()
+                osc.frequency.value = frequency
+                osc.connect(audioContext.destination)
+                osc.start()
+
+                // record audio video via Tab Capture
+                const mediaRecorder = new MediaRecorder(stream)
+                mediaRecorder.start()
+                mediaRecorder.ondataavailable = (e) => {
+                    const downloadLink = document.createElement("a")
+                    downloadLink.download = downloadName
+                    downloadLink.href = URL.createObjectURL(e.data)
+                    downloadLink.click()
+                }
+
+                // record for 2 seconds then stop
+                setTimeout(() => {
+                    mediaRecorder.stop()
+                    osc.stop()
+                }, 10000)
+            })
+        </script>
+    </head>
+    <body>
+        <h1>Page 2</h1>
+    </body>
+</html>
